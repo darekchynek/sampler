@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Slider, WhiteSpace } from '@ant-design/react-native';
 
-const CustomFilters = ({ selectedPad, sampleRate, setSampleRate, bitRate, setBitRate }) => {
+const CustomFilters = ({ selectedPad, sampleRate, setSampleRate, bitRate, setBitRate, pitch ,setPitch }) => {
     return (
         <View style={styles.container}>
             <Text style={styles.presetText}>{selectedPad.selectedPreset}</Text>
@@ -31,6 +31,19 @@ const CustomFilters = ({ selectedPad, sampleRate, setSampleRate, bitRate, setBit
                     step={1}
                     defaultValue={bitRate}
                     onChange={value => setBitRate(value)}
+                />
+            </View>
+            <WhiteSpace />
+            <View style={styles.slider}>
+                <Text>
+                    { `Pitch: ${pitch}` }
+                </Text>
+                <Slider
+                    min={0.1}
+                    max={2.0}
+                    step={0.1}
+                    defaultValue={pitch}
+                    onChange={value => setPitch(value)}
                 />
             </View>
         </View>

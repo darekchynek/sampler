@@ -4,7 +4,7 @@ import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import CustomFilters from './CustomFilters';
 import RecordPlayButtons from './RecordPlayButtons';
-import { DEFAULT_BIT_RATE, DEFAULT_SAMPLE_RATE} from '../helpers/constants';
+import { DEFAULT_BIT_RATE, DEFAULT_SAMPLE_RATE, DEFAULT_PITCH} from '../helpers/constants';
 import { setPadSettings, padsSettings } from '../helpers/PadSettings';
 
 const AudioContainer = ({ micPermission, selectedPad }) => {
@@ -15,6 +15,7 @@ const AudioContainer = ({ micPermission, selectedPad }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [sampleRate, setSampleRate] = useState(DEFAULT_SAMPLE_RATE);
     const [bitRate, setBitRate] = useState(DEFAULT_BIT_RATE);
+    const [pitch, setPitch] = useState(DEFAULT_PITCH);
 
     useEffect(() => {
         const { id } = selectedPad;
@@ -98,8 +99,8 @@ const AudioContainer = ({ micPermission, selectedPad }) => {
                 isLooping: false,
                 isMuted: false,
                 volume: 1.0,
-                rate: 1.0,
-                shouldCorrectPitch: true,
+                rate: pitch,
+                shouldCorrectPitch: false,
                 pitchCorrectionQuality: Audio.PitchCorrectionQuality.High
             },
             status => setCanPlay(status)
@@ -127,6 +128,8 @@ const AudioContainer = ({ micPermission, selectedPad }) => {
                 setSampleRate={setSampleRateAndSettings}
                 bitRate={bitRate}
                 setBitRate={setBitRateAndSettings}
+                pitch={pitch}
+                setPitch={setPitch}
             />
             <RecordPlayButtons
                 isRecording={isRecording}
