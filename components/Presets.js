@@ -42,7 +42,8 @@ const styles = StyleSheet.create({
     presetSelect: {
         flex: 1,
         marginTop: 12,
-        marginBottom: 12
+        marginBottom: 12,
+        width: '100%'
     },
     text: {
         color: 'black'

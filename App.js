@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import * as Permissions from 'expo-permissions';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
-import { Container, Content, Text, Footer, FooterTab } from 'native-base';
+import { Container, Content, Text } from 'native-base';
 import Presets from './components/Presets';
 import HeaderContainer from './components/HeaderContainer';
 

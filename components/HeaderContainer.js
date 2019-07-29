@@ -5,9 +5,6 @@ const HeaderContainer = () => {
     return (
         <Header>
             <Left>
-                <Button transparent>
-                    <Icon name='arrow-back' />
-                </Button>
             </Left>
             <Body>
                 <Title>Sampler</Title>
