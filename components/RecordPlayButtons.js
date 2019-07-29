@@ -9,6 +9,7 @@ const RecordPlayButtons = ({
     micPermission,
     playSound,
     isPlaying,
+    canPlay,
     sound,
     setSound
 }) => {

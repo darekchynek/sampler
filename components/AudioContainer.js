@@ -23,7 +23,7 @@ const AudioContainer = ({ micPermission, selectedPreset }) => {
 
         setSampleRate(currentPreset.padCustomFilters.sampleRate);
         setBitRate(currentPreset.padCustomFilters.bitRate);
-    })
+    }, [selectedPreset])
 
     const setSampleRateAndSettings = value => {
         const changedPadCustomFilters = {
@@ -95,6 +95,16 @@ const AudioContainer = ({ micPermission, selectedPreset }) => {
 
         await FileSystem.getInfoAsync(record.getURI());
 
+        setSound(true);
+    };
+
+    const canPlayHandler = async status => {
+        if (status.isLoaded) {
+            await setCanPlay(status.isLoaded);
+        }
+    };
+
+    const createSound = async () => {
         const { sound } = await record.createNewLoadedSoundAsync(
             {
                 isLooping: false,
@@ -106,27 +116,24 @@ const AudioContainer = ({ micPermission, selectedPreset }) => {
             },
             (status) => canPlayHandler(status)
         );
-        setSound(sound);
-    }
-
-    const canPlayHandler = async status => {
-        console.log(status);
-        if (status.isLoaded) {
-            await setCanPlay(status.isLoaded);
-        }
+        return sound;
     }
 
     const playSound = () => {
-        if (sound != null) {
-            if (isPlaying) {
-                sound.stopAsync();
-                setIsPlaying(false);
-            } else {
-                sound.playAsync();
-                setIsPlaying(true);
-            }
+        if (!isPlaying) {
+            createSound().then(
+                sound => {
+                    sound.playAsync();
+                    setSound(sound);
+                    setIsPlaying(true);
+                }
+            )
+        } else {
+            sound.stopAsync();
+            setIsPlaying(false);
         }
-    }
+
+    };
 
     return (
         <View style={styles.container}>
