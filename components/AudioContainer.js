@@ -5,9 +5,9 @@ import * as FileSystem from 'expo-file-system';
 import CustomFilters from './CustomFilters';
 import RecordPlayButtons from './RecordPlayButtons';
 import { DEFAULT_BIT_RATE, DEFAULT_SAMPLE_RATE, DEFAULT_PITCH} from '../helpers/constants';
-import { setPadSettings, padsSettings } from '../helpers/PadSettings';
+import { setPresetSettings, presetSettings } from '../helpers/PresetSettings';
 
-const AudioContainer = ({ micPermission, selectedPad }) => {
+const AudioContainer = ({ micPermission, selectedPreset }) => {
     const [isRecording, setIsRecording] = useState(false);
     const [record, setRecord] = useState(null);
     const [sound, setSound] = useState(null);
@@ -18,28 +18,29 @@ const AudioContainer = ({ micPermission, selectedPad }) => {
     const [pitch, setPitch] = useState(DEFAULT_PITCH);
 
     useEffect(() => {
-        const { id } = selectedPad;
-        const currentPad = padsSettings.find(pad => pad.id === id);
-        setSampleRate(currentPad.padCustomFilters.sampleRate);
-        setBitRate(currentPad.padCustomFilters.bitRate);
-    })
+        const { value } = selectedPreset;
+        const currentPreset = presetSettings.find(preset => preset.value === value);
+
+        setSampleRate(currentPreset.padCustomFilters.sampleRate);
+        setBitRate(currentPreset.padCustomFilters.bitRate);
+    }, [selectedPreset])
 
     const setSampleRateAndSettings = value => {
         const changedPadCustomFilters = {
-            ...selectedPad.padCustomFilters,
+            ...selectedPreset.padCustomFilters,
             sampleRate: value
         }
         setSampleRate(value);
-        setPadSettings(selectedPad.id, changedPadCustomFilters)
+        setPresetSettings(selectedPreset.value, changedPadCustomFilters)
     };
 
     const setBitRateAndSettings = value => {
         const changedPadCustomFilters = {
-            ...selectedPad.padCustomFilters,
+            ...selectedPreset.padCustomFilters,
             bitRate: value
         }
         setBitRate(value);
-        setPadSettings(selectedPad.id, changedPadCustomFilters)
+        setPresetSettings(selectedPreset.value, changedPadCustomFilters)
     };
 
     const changePreset = preset => {
@@ -94,6 +95,16 @@ const AudioContainer = ({ micPermission, selectedPad }) => {
 
         await FileSystem.getInfoAsync(record.getURI());
 
+        setSound(true);
+    };
+
+    const canPlayHandler = async status => {
+        if (status.isLoaded) {
+            await setCanPlay(status.isLoaded);
+        }
+    };
+
+    const createSound = async () => {
         const { sound } = await record.createNewLoadedSoundAsync(
             {
                 isLooping: false,
@@ -103,27 +114,31 @@ const AudioContainer = ({ micPermission, selectedPad }) => {
                 shouldCorrectPitch: false,
                 pitchCorrectionQuality: Audio.PitchCorrectionQuality.High
             },
-            status => setCanPlay(status)
+            (status) => canPlayHandler(status)
         );
-        setSound(sound);
+        return sound;
     }
 
     const playSound = () => {
-        if (sound != null) {
-            if (isPlaying) {
-                sound.stopAsync();
-                setIsPlaying(false);
-            } else {
-                sound.playAsync();
-                setIsPlaying(true);
-            }
+        if (!isPlaying) {
+            createSound().then(
+                sound => {
+                    sound.playAsync();
+                    setSound(sound);
+                    setIsPlaying(true);
+                }
+            )
+        } else {
+            sound.stopAsync();
+            setIsPlaying(false);
         }
-    }
+
+    };
 
     return (
         <View style={styles.container}>
             <CustomFilters
-                selectedPad={selectedPad}
+                selectedPad={selectedPreset}
                 sampleRate={sampleRate}
                 setSampleRate={setSampleRateAndSettings}
                 bitRate={bitRate}
@@ -131,25 +146,29 @@ const AudioContainer = ({ micPermission, selectedPad }) => {
                 pitch={pitch}
                 setPitch={setPitch}
             />
-            <RecordPlayButtons
-                isRecording={isRecording}
-                stopRecording={stopRecording}
-                recordAudio={recordAudio}
-                micPermission={micPermission}
-                canPlay={canPlay}
-                playSound={playSound}
-                isPlaying={isPlaying}
-            />
+            <View style={styles.container}>
+                <RecordPlayButtons
+                    isRecording={isRecording}
+                    stopRecording={stopRecording}
+                    recordAudio={recordAudio}
+                    micPermission={micPermission}
+                    canPlay={canPlay}
+                    playSound={playSound}
+                    isPlaying={isPlaying}
+                    sound={sound}
+                    setSound={setSound}
+                />
+            </View>
         </View>
-    )
-}
+    );
+};
 
 export default AudioContainer;
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between'
+        flexDirection: 'column',
+        justifyContent: 'space-between',
     }
 });

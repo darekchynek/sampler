@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 import * as Permissions from 'expo-permissions';
-import { ScreenOrientation } from 'expo';
-import Pads from './components/Pads';
+import * as Font from 'expo-font';
+import { Ionicons } from '@expo/vector-icons';
+import { Container, Content, Text } from 'native-base';
+import Presets from './components/Presets';
+import HeaderContainer from './components/HeaderContainer';
 
 export default function App() {
     const [isLoading, setIsLoading] = useState(true);
@@ -10,6 +12,11 @@ export default function App() {
 
     const askForPermissions = async () => {
         const { status } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
+        await Font.loadAsync({
+            Roboto: require('native-base/Fonts/Roboto.ttf'),
+            Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+            ...Ionicons.font,
+        });
 
         if (status === 'granted') {
             return true;
@@ -19,26 +26,21 @@ export default function App() {
     const startApp = async () => {
         await askForPermissions().then(response => {
             setMicPermission(response);
-            ScreenOrientation.lockAsync(ScreenOrientation.Orientation.LANDSCAPE);
         })
     };
 
     startApp().then(() => setIsLoading(false));
 
     return (
-        <View style={styles.container}>
-            {
-              isLoading
-                  ? <Text>loading...</Text>
-                  : <Pads micPermission={micPermission}/>
-            }
-        </View>
+        <Container>
+            <HeaderContainer />
+            <Content>
+                {
+                    isLoading
+                        ? <Text>loading...</Text>
+                        : <Presets micPermission={micPermission}/>
+                }
+            </Content>
+        </Container>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-    }
-});

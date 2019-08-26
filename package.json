@@ -8,9 +8,11 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "@ant-design/react-native": "^3.1.11",
+    "@react-native-community/slider": "^2.0.0",
     "expo": "^33.0.0",
+    "expo-font": "^5.0.1",
     "expo-permissions": "^6.0.0",
+    "native-base": "^2.13.4",
     "react": "16.8.3",
     "react-dom": "^16.8.6",
     "react-native": "https://github.com/expo/react-native/archive/sdk-33.0.0.tar.gz",
