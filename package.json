@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@react-native-community/slider": "^2.0.0",
-    "expo": "^33.0.0",
+    "expo": "^46.0.14",
     "expo-font": "^5.0.1",
     "expo-permissions": "^6.0.0",
     "native-base": "^2.13.4",
